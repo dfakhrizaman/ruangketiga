@@ -1,0 +1,16 @@
+# .air.toml
+
+[build]
+# Command to build your app
+cmd = "go build -o ./tmp/ruangketiga ./cmd/server"
+# Binary to run after build
+bin = "./tmp/ruangketiga"
+# Watch these directories for file changes
+include_dir = ["./cmd", "./internal"]
+
+# Exclude certain files or directories (like .git, vendor, etc.)
+exclude_dir = ["vendor", "migrations", ".git", "tmp"]
+
+# If you have environment variables to load, you can specify them here:
+# For example:
+# env_file = ".env"

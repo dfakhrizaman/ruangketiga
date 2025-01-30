@@ -1,0 +1,22 @@
+services:
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: ruangketiga_dev
+    volumes:
+      - .:/app  
+      - go-mod-cache:/go/pkg/mod 
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: myuser
+      DB_PASSWORD: mypassword
+      DB_NAME: ruangketiga
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  go-mod-cache:
