@@ -23,25 +23,25 @@ func (h *PlacesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		// GET /places or GET /places/{id}
 		if strings.HasPrefix(path, "/places/") {
-			h.getByID(w, r)
+			h.GetByID(w, r)
 		} else {
-			h.getAll(w, r)
+			h.GetAll(w, r)
 		}
 	case http.MethodPost:
 		// POST /places
-		h.create(w, r)
+		h.Create(w, r)
 	case http.MethodPut:
 		// PUT /places/{id}
-		h.update(w, r)
+		h.Update(w, r)
 	case http.MethodDelete:
 		// DELETE /places/{id}
-		h.delete(w, r)
+		h.Delete(w, r)
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
-func (h *PlacesHandler) create(w http.ResponseWriter, r *http.Request) {
+func (h *PlacesHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var p places.Place
 	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
@@ -57,7 +57,7 @@ func (h *PlacesHandler) create(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-func (h *PlacesHandler) getAll(w http.ResponseWriter, r *http.Request) {
+func (h *PlacesHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	placesList, err := h.repo.GetAll()
 	if err != nil {
 		log.Println("GetAll places error:", err)
@@ -68,7 +68,7 @@ func (h *PlacesHandler) getAll(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(placesList)
 }
 
-func (h *PlacesHandler) getByID(w http.ResponseWriter, r *http.Request) {
+func (h *PlacesHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	segments := strings.Split(r.URL.Path, "/")
 	if len(segments) < 3 {
 		http.Error(w, "Missing place ID", http.StatusBadRequest)
@@ -90,7 +90,7 @@ func (h *PlacesHandler) getByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-func (h *PlacesHandler) update(w http.ResponseWriter, r *http.Request) {
+func (h *PlacesHandler) Update(w http.ResponseWriter, r *http.Request) {
 	segments := strings.Split(r.URL.Path, "/")
 	if len(segments) < 3 {
 		http.Error(w, "Missing place ID", http.StatusBadRequest)
@@ -112,7 +112,7 @@ func (h *PlacesHandler) update(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-func (h *PlacesHandler) delete(w http.ResponseWriter, r *http.Request) {
+func (h *PlacesHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	segments := strings.Split(r.URL.Path, "/")
 	if len(segments) < 3 {
 		http.Error(w, "Missing place ID", http.StatusBadRequest)

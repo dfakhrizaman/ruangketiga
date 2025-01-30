@@ -1,44 +1,56 @@
 services:
   db:
-    image: postgres:15
+    image: postgres:15-alpine
     container_name: ruangketiga_db
-    restart: always
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: ruangketiga
+      POSTGRES_DB: ruangketiga_db
     ports:
       - "5432:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d ruangketiga_db || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    
+  migrate:
+    image: migrate/migrate:latest
+    container_name: ruangketiga_migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # Mount the migrations folder so the 'migrate' CLI can see them
+      - ./migrations:/migrations
+    # Use the SAME credentials here to match the DB container:
+    command: [
+      "-path", "/migrations",
+      "-database", "postgres://myuser:mypassword@db:5432/ruangketiga_db?sslmode=disable",
+      "up"
+    ]
 
   app:
+    # Build using the 'dev' stage of our Dockerfile to enable hot reload
     build:
       context: .
-      dockerfile: Dockerfile 
+      dockerfile: Dockerfile
+      target: dev
     container_name: ruangketiga_app
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
     depends_on:
       - db
     environment:
       DB_HOST: db
-      DB_PORT: "5432"
+      DB_PORT: 5432
       DB_USER: myuser
       DB_PASSWORD: mypassword
-      DB_NAME: ruangketiga
-    ports:
-      - "8080:8080"
-
-  migrate:
-    image: migrate/migrate:latest
-    depends_on:
-      - db
-    volumes:
-      - ./migrations:/migrations
-    command: [
-      "-path", "/migrations",
-      "-database", "postgres://myuser:mypassword@db:5432/ruangketiga?sslmode=disable",
-      "up"
-    ]
+      DB_NAME: ruangketiga_db
 
 volumes:
   dbdata:
