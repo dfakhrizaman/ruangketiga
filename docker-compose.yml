@@ -24,23 +24,22 @@ services:
         condition: service_healthy
     volumes:
       # Mount the migrations folder so the 'migrate' CLI can see them
-      - ./migrations:/migrations
-    # Use the SAME credentials here to match the DB container:
+      - ./backend/migrations:/migrations
     command: [
       "-path", "/migrations",
       "-database", "postgres://myuser:mypassword@db:5432/ruangketiga_db?sslmode=disable",
       "up"
     ]
 
-  app:
-    # Build using the 'dev' stage of our Dockerfile to enable hot reload
+  backend:
+    #* Change `target: dev` to `target: production` when pushing to prod
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
       target: dev
     container_name: ruangketiga_app
     volumes:
-      - .:/app
+      - ./backend:/app
     ports:
       - "8080:8080"
     depends_on:
@@ -51,6 +50,18 @@ services:
       DB_USER: myuser
       DB_PASSWORD: mypassword
       DB_NAME: ruangketiga_db
+  
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ...
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./frontend:/app
+  #   depends_on:
+  #     - backend  # If your frontend calls the backend
 
 volumes:
   dbdata:
