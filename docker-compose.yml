@@ -32,14 +32,16 @@ services:
     ]
 
   backend:
-    #* Change `target: dev` to `target: production` when pushing to prod
+    #* Change `target: dev` to `target: production` when pushing to release
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: dev
+      target: production
     container_name: ruangketiga_app
-    volumes:
-      - ./backend:/app
+
+    #* Comment the volumes and its child when pushing to release
+    # volumes:
+      # - ./backend:/app
     ports:
       - "8080:8080"
     depends_on:
