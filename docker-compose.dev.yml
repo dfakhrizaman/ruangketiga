@@ -15,7 +15,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
+    
   migrate:
     image: migrate/migrate:latest
     container_name: ruangketiga_migrate
@@ -23,6 +23,7 @@ services:
       db:
         condition: service_healthy
     volumes:
+      # Mount the migrations folder so the 'migrate' CLI can see them
       - ./backend/migrations:/migrations
     command: [
       "-path", "/migrations",
@@ -34,8 +35,10 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: production  # Use production target
-    container_name: ruangketiga_app
+      target: dev  # Use development target
+    container_name: ruangketiga_app_dev
+    volumes:
+      - ./backend:/app  # Mount source code for hot reload
     ports:
       - "8080:8080"
     depends_on:
@@ -51,16 +54,15 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: next.dockerfile
-      # target: runner  # Use runner target for production
-    container_name: ruangketiga_web
+      dockerfile: next.dev.dockerfile  # Development Dockerfile for Next.js
+    container_name: ruangketiga_web_dev
+    volumes:
+      - ./frontend:/app                  # Mount source code for hot reload
+      - /app/node_modules                 # Prevent host's node_modules from overwriting container's
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8080  # Use service name for internal communication
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
     depends_on:
       - backend
     restart: unless-stopped
-
-volumes:
-  dbdata:

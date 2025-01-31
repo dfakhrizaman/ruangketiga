@@ -2,6 +2,11 @@ import Image from "next/image";
 import styles from "./page.module.css";
 
 export default function Home() {
+
+  console.log(process.env.NEXT_PUBLIC_API_URL);
+  console.log('tessssxxxx');
+  
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -15,7 +20,7 @@ export default function Home() {
         />
         <ol>
           <li>
-            Get started by editing <code>src/app/page.tsx</code>.
+            Dont want to
           </li>
           <li>Save and see your changes instantly.</li>
         </ol>
@@ -34,7 +39,7 @@ export default function Home() {
               width={20}
               height={20}
             />
-            Deploy now
+            Deploy nxow
           </a>
           <a
             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
