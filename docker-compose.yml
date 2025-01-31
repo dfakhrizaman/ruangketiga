@@ -50,18 +50,18 @@ services:
       DB_USER: myuser
       DB_PASSWORD: mypassword
       DB_NAME: ruangketiga_db
-  
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ...
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./frontend:/app
-  #   depends_on:
-  #     - backend  # If your frontend calls the backend
+  frontend:
+    container_name: ruangketiga_web
+    image: nextapp:1.0.0
+    build:
+      context: ./frontend
+      dockerfile: next.dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+    depends_on:
+      - backend
 
 volumes:
   dbdata:
